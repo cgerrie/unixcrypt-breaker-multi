@@ -1,0 +1,27 @@
+ChangeLog
+
+v0.2 2013/06/20
+	(2013/06/20) PS1 - fixed a memory overrun bug on 64-bit
+	machines. Reported by Fabien Le Mentec.
+	(2009/03/03) PS1 - added ability to simultaneously decrypt
+	multiple files that were encrypted with the same key.
+
+v0.1 2008/02/01
+	(2008/01/31) PS1 - split user interface into separate file.
+	(2008/01/30) PS1 - Added versioning information to the stats file
+	format. Added block number to wire file format. Eliminated
+	duplicate code. Added debug option. Added scroll display mode.
+	(2008/01/20) PS1 - Reworked command-line options. Eliminated the
+	separate "stats" program. Allow corpus to be read from multiple files. 
+	Added README file. Renamed ngrams.[ch] as stats.[ch].
+	(2008/01/19) PS1 - Converted to autoconf/automake.
+	(2006/07/26) PS1 - Internalized NMAX to stats.c. Set bias to
+	0.00. Add wires directedly for better Bayesian estimates. Added
+	erase_block function. Added -o option to select output file. Added
+	alternative A-value estimator to ngrams.c.
+	(2006/07/23) PS1 - Cleaned up process_block(). Replaced --colors
+	by --monochrome. Added explicit scalable bias to frequencies.
+	(2006/07/21) PS1 - Moved text analysis into separate ngrams
+	library. Biased frequencies to be non-zero.
+	(2006/01/31) PS1 - First implementation of unixcrypt-breaker.
+	Single-block algorithm, no backtracking, graphical display.

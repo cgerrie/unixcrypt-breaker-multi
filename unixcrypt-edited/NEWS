@@ -1,0 +1,9 @@
+June 20, 2013: Release 0.2
+
+ Added ability to simultaneously decrypt multiple files that were
+ encrypted with the same key. Fixed a memory overrun bug on 64-bit
+ machines.
+
+February 1, 2008: Release 0.1
+
+ First public release.

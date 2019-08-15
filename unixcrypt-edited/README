@@ -1,0 +1,57 @@
+			  unixcrypt-breaker
+
+		    Break unix "crypt" encryption
+
+				* * *
+
+SUMMARY
+
+ unixcrypt-breaker is an automated tool for breaking the encryption of
+ the old unix crypt(1) utility.  It can guess substantial portions of
+ the plaintext without previous knowledge of the key.
+
+INSTALLATION
+
+ For instructions on compiling and installation, see the file INSTALL.
+
+USAGE EXAMPLE
+
+ Suppose file.cpt is a file encrypted with crypt(1), and plain1,
+ plain2, plain3 are large representative plaintext files of a similar
+ type. First, sample the plaintext files using the command
+
+  unixcrypt-breaker -s /tmp/stats.txt -c plain1 plain2 plain3
+
+ This will write some statistical information about the plaintext
+ files to the file /tmp/stats.txt.  Then, decrypt file.cpt with the
+ following command:
+
+  unixcrypt-breaker -s /tmp/stats.txt file.cpt
+
+ The output is written to file.cpt.guess.
+
+USAGE
+
+ For detailed usage information, see the man page.
+
+COPYRIGHT
+
+ Copyright (C) 2006-2013 Peter Selinger
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or (at
+ your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MER-
+ CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+ USA. See also http://www.gnu.org/.
+
+ The GNU General Public License is contained in the file COPYING that
+ is distributed with this software.

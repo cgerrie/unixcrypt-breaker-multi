@@ -1,0 +1,148 @@
+.\" Copyright (C) 2006-2013 Peter Selinger.
+.\" This file is part of unixcrypt-breaker. It is free software and it is
+.\" distributed under the terms of the GNU general public license. See
+.\" the file COPYING for details.
+.\" $Id: unixcrypt-breaker.1.in 233 2007-10-03 03:33:43Z selinger $
+.TH UNIXCRYPT-BREAKER 1 "June 2013" "Version 0.2" "Encryption"
+.SH NAME
+unixcrypt-breaker \- break unix "crypt" encryption
+.SH SYNOPSIS
+
+.nf
+.B unixcrypt-breaker [\fIoptions\fP] -s \fIstatfile\fP -c \fIcorpusfile\fP...
+.B unixcrypt-breaker [\fIoptions\fP] -s \fIstatfile\fP \fIcipherfile\fP...
+.fi
+.SH DESCRIPTION
+
+\fBunixcrypt-breaker\fP is an automated tool for breaking the
+encryption of the old unix \fBcrypt\fP(1) utility.  It can guess
+substantial portions of the plaintext without previous knowledge of
+the key.
+
+It is well-known that unix \fBcrypt\fP provides only weak security.
+Existing software for breaking it includes the Crypt Breaker's
+Workbench (http://axion.physics.ubc.ca/cbw.html). Unlike the Crypt
+Breaker's Workbench, \fBunixcrypt-breaker\fP is fully automatic and
+does not require user interaction. Rather than relying on the user to
+guess likely plaintexts, \fBunixcrypt-breaker\fP uses a statistical
+model for guessing plausible plaintexts.
+
+To guess the plaintext correctly, \fBunixcrypt-breaker\fP must first
+be primed with a body of sample data (the "corpus") that is presumed
+to be similar to the unknown plaintext. For example, if the plaintext
+is assumed to be HTML data, then \fBunixcrypt-breaker\fP should be
+primed with a corpus of HTML data.  
+
+Note that \fBunixcrypt-breaker\fP can be used to extract a partial
+plaintext, but cannot currently be used to extract the actual
+encryption key used.
+.SH OPERATION
+
+\fBunixcrypt-breaker\fP operates in two distinct steps: \fIsampling\fP
+and \fIdecryption\fP. During the sampling step (specified with the
+\fB-c\fP option, corresponding to the first form of usage above), data
+is read from a corpus of one or more sample plaintext files, and the
+resulting statistics are written to a file specified with the \fB-s\fP
+option. This file is then used during the decryption step (the second
+form of usage above) to partially decrypt one or more ciphertext
+files. If more than one file is specified for decryption, they must
+have been encrypted with the same key.
+
+It is important to note that \fBunixcrypt-breaker\fP only produces an
+approximation to the plaintext. The percentage of bytes correctly
+guessed depends on many factors, such as the file type, and the
+quality of the corpus of sample data. Performance will be best for
+file contents that have high redundancy (such as text).
+.SH USAGE EXAMPLE
+
+Suppose file.cpt is a file encrypted with crypt(1), and plain1,
+plain2, plain3 are large representative plaintext files of a similar
+type. First, sample the plaintext files using the command
+
+.nf
+    unixcrypt-breaker -s /tmp/stats.txt -c plain1 plain2 plain3
+.fi
+
+This will write some statistical information about the plaintext files
+to the file /tmp/stats.txt. 
+Then, decrypt file.cpt with the following command: 
+
+.nf
+    unixcrypt-breaker -s /tmp/stats.txt file.cpt
+.fi
+
+The output is written to file.cpt.guess.
+.SH OPTIONS
+
+.TP 15
+.B -h, --help
+Help. Print usage information and exit.
+.TP
+.B -V, --version
+Print version info and exit.
+.TP
+.B -L, --license
+Print license info and exit.
+.TP
+.B -c, --corpus
+Sampling mode: generate statistics from a corpus of sample
+data. The corpus is read from one or more filenames specified on the
+command line, or from stdin if no files are specified. The statistics
+are written to a file specified with the \fB-s\fP option. For best
+performance, the corpus should be as large as possible (several
+megabytes would be great), and should be as similar as possible to 
+the likely plaintext.
+.TP
+.B -s \fIfile\fP, --statfile \fIfile\fP
+Specify the file to which statistical data is written (in sampling
+mode) or from which it is read (in decryption mode). This option is
+mandatory.
+.TP
+.B -o \fIfile\fP, --output \fIfile\fP
+Specify a file to write the plaintext guess to. The default is to
+append the extension ".guess" to the ciphertext file.
+.TP
+.B -d \fImode\fP, --display \fImode\fP
+Specify the display mode for progress information. Possible choices
+are: \fBcolor\fP (default), \fBmono\fP, or \fBnone\fP. The default is
+to show a color display that is compatible with color
+X-Terminals. \fBmono\fP selects a black-and-white display, and
+\fBnone\fP displays no progress information at all. 
+.TP
+.B -w \fIfile\fP, --wirefile \fIfile\fP
+Output optional wiring information to a file. The wirings are internal
+to the crypt algorithm and are of interest to experts. 
+.TP
+.B -m \fIn\fP, --maxdisplay \fIn\fP
+Specify how many blocks can fit on the display. This is used when
+decrypting multiple files simultanesouly. Regardless of the number of
+files given on the command line, at most \fIn\fP blocks will
+be displayed simultaneously. The default is 1.
+.TP
+.B --
+End of options. Any remaining arguments are interpreted as filenames.
+.PD
+.SH VERSION
+
+0.2
+.SH AUTHOR
+
+Peter Selinger <selinger at users.sourceforge.net>
+.SH COPYRIGHT
+
+Copyright (C) 2006-2013 Peter Selinger
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+USA. See also http://www.gnu.org/.
