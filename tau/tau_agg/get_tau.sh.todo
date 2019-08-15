@@ -1,0 +1,6 @@
+output stderrs to file (to be tail -f "ed")
+save output of sigmas_to_tau
+start processing at arbitrary i
+
+specify wires directory
+wires_to_tau output file

@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+
+/*static inline int fac(int n) {
+	if(n==0 || n==1)
+		return 1;
+	int acc = 1;
+	for(;n>0;n--)
+		acc *= n;
+	return acc;
+}*/
+
+static inline int choose(int n, int k) {
+	//fprintf(stderr, "n: %d\t k:%d\n", n, k);
+	//return fac(n)/(fac(k)*fac(n-k));
+	// TODO REIMPLEMENT WITHOUT FAC AND CANCELLING TOP BOTTOM
+	double acc = 1;
+	if(n-k<k)
+		k = n-k;
+	int nmk = n-k;
+	for(;n>nmk;n--)
+		acc *= n;
+	for(;k>0;k--)
+		acc /= k;
+	return acc;
+}
+
+static inline double boolean_pdf(int x, int n, double p) {
+	return choose(n,x)*pow(p,x)*pow(1-p,n-x);
+}
+
+/*static inline int choose_2(int n) {
+	return n*(n+1)/2;
+}*/
+
+
+
+int main(int argc, char *argv[]) {
+	int i, j;
+	char c;
+	// INPUT SUMBER OF SIGMAS SAMPLED
+	/*if(argc<2) {
+		fprintf(stderr, "not enough arguments\n");
+		return 1;
+	}*/
+
+
+	int wire_start = -1, number_of_sigmas = -1, table_width = -1;
+	fscanf(stdin, "%*s %*s %*s %*s %d", &wire_start); // "data for wire from %d"
+	fscanf(stdin, "%*s %*s %d %*s", &number_of_sigmas); // "sampled from %d sigmas"
+	fscanf(stdin, "%*s %*s %*s"); // "to \ coincidences"
+	while(fscanf(stdin, "%d%c", &table_width, &c)==2 && c!='\n');
+	table_width++; // while loop counts highest label, but 0 must also be included
+
+	// GENERATE DISTRIBUTION APPROXIMATIONS FOR CORRECT AND INCORRECT WIRES
+	double *correct = NULL;
+	       //*incorrect = NULL;
+	correct = malloc(table_width*sizeof(double));
+	//incorrect = malloc(table_width*sizeof(double));
+	//int number_of_pairs = choose_2(number_of_sigmas);
+
+
+	/*for(i=0;i<table_width;i++) {
+		//*(incorrect+i) = boolean_pdf(i, number_of_pairs, 1.0/65536.0);
+		*(correct+i) = (255.0l/64771.0l)*boolean_pdf(i, number_of_pairs, 1.0l/256.0l)+
+		               (64516.0l/64771.0l)*boolean_pdf(i, number_of_pairs, 1.0l/65536.0l);
+		//*(correct+i) = boolean_pdf(i, number_of_pairs, 1.5258789062E-5);
+		// TODO WHY DID IT WORK WITH THIS??
+	}*/
+	/*for(i=0;i<table_width;i++)
+		*(correct+i) = pow(10,i);*/
+	
+	// READ DISTRIBUTION FROM A FILE
+	if(argc<2) {
+		fprintf(stderr, "Not enough arguments. You must supply a distribution file.\n");
+		return 1;
+	}
+	FILE *dist = fopen(argv[1], "r");
+	fprintf(stderr, "file: %s\n", argv[1]);
+	for(i=0;i<table_width;i++) {
+		if(fscanf(dist,"%lf ",correct+i)<1) {
+			fprintf(stderr, "Error reading distribution file");
+			return 1;
+		}
+	}
+	for(i=0;i<table_width;i++)
+		fprintf(stderr, "%lf, ", *(correct+i));
+	fprintf(stderr, "\n");
+
+
+	// INPUT K TABLE (sigmas_to_tau)
+	// CALCULATE LIKELIHOOD FOR EACH WIRE
+	double likelihood[256] = {0};
+	int curr;
+	for(i=0;i<256;i++) { // row i
+		// TODO SKIP ROW FOR WIRE BEING READ wire_start
+		scanf("%*d");
+		for(j=0;j<table_width;j++) {
+			scanf("%d",&curr);
+			likelihood[i] += *(correct+j) * curr; // TODO CURR IS TOO HIGH SO IT ALWAYS GOES TO 0!
+		}
+	}
+	// TODO MULTIPLICATIVE LIKELIHOOD
+	// TODO NULL HYPOTHESIS DISTRIBUTION
+	// TODO LEAST LIKELY
+
+	// SELECT MAX LIKELIHOOD
+	double max = -1;
+	int max_i = -1;
+	for(i=0;i<256;i++) {
+		if(likelihood[i]>max) {
+			max = likelihood[i];
+			max_i = i;
+		}
+	}
+	// OUTPUT
+	fprintf(stderr, "best i: %d\nlikelihood %.10e\n",max_i,max);
+	fprintf(stdout, "%d\n", max_i);
+	// CLEANUP
+	free(correct);
+	fclose(dist);
+	return 0;
+}

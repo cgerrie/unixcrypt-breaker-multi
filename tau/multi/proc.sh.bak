@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# gen wirefile of desired length
+head -n $(echo $((35*$1))) < ../../../../wires/wires_complete.txt > wire_file
+wirefile="./wire_file"
+
+# gen dist file
+../../dist/get_binom_dist $1 > dist_file
+distfile="./dist_file"
+
+# get data
+mkdir data 2>/dev/null
+for i in {0..255}
+do
+	../../K/sigmas_to_tau < $wirefile $i 2>/dev/null > data/$i.data
+done
+echo "done collecting data for $1"
+# process data
+mkdir wires 2>/dev/null
+for i in {0..255}
+do
+	../../tau_agg/tau_table_picker < data/$i.data $distfile 1> wires/$i.wire 2>/dev/null
+done
+../../tau_agg/wires_to_tau wires >/dev/null
+echo "done processing $1"
+# find difference
+diff wires/tau ../tau.real > diff
+
+# count error
+../../../rho_pi/correct_guesses wires/tau ../tau.real > number_correct
+
+# report
+echo "done analyzing $1"
+cat number_correct
+date
